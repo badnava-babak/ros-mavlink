@@ -1,46 +1,123 @@
 # KUFRL Software-Stack Upgrade
-We provide to method to upgrade KUFRL software stack.
-The first method is to install an Ubuntu 20.04 on the Jetson Nano, and then install everything else on the Ubuntu. We recommend this method for deployment.
-In the second method, we use Docker containers to provide a virtual machine that has an Ubuntu 20.04 installed on it, and then we install ROS 2 and all other required packages on the virtual machine provided by Docker.
-This method is suitable for testing purposes, where you want to run both drone and GCS apps on one computer.
 
-## ROS 2 installation on Ubuntu 20.04 (Recommended)
-We assume you have a system with an Ubuntu 20.04 installed on it. From there, you can run
-the ```install-all-on-ubuntu-20.04.sh``` file to install ROS 2 and all the required packages.
+This repository provides two methods for upgrading the KUFRL software stack on a Jetson Nano. The primary objective is to enable the Jetson Nano to communicate with other Jetson Nano devices via Mavlink messages.
 
-```./install-all-on-ubuntu-20.04.sh```
+## Installation Methods
 
-By running ```install-all-on-ubuntu-20.04.sh```, you also install all the required python packages. A list of required
-python packages, and their corresponding versions, is available in ```requirements.txt```. You can add more packages to
-this list and all of them would be installed on your operating system.
+We offer two installation methods:
 
-At the end of the installation, we run a test ROS program to make sure that the installation was successful. This is a
-simple "hello world" program written in ROS to just test the installation, and you can kill it after you made sure that
-the installation was successful. 
+1. **Direct Ubuntu 20.04 Installation (Recommended):**
 
+   - Install Ubuntu 20.04 directly on the Jetson Nano.
+   - Manually install ROS 2 and all required packages.
+   - Suitable for deployment.
 
-## ROS 2 Docker installation
+2. **Docker-based Installation:**
 
-### Install Docker
-For this method, you first need to install Docker on your machine using ```install-docker.sh``` file and running it on your machine.
+   - Uses Docker containers to create a virtualized Ubuntu 20.04 environment.
+   - ROS 2 and required packages are installed inside the container.
+   - Suitable for testing and development, especially when running both drone and GCS applications on the same machine.
 
-```install-docker.sh```
+---
 
-Then, you can test your installation by running the following command:
+## Method 1: Installing ROS 2 on Ubuntu 20.04 (Recommended)
 
-```test-docker-installation.sh```
+1. Ensure your Jetson Nano has Ubuntu 20.04 installed.
+2. Run the installation script:
+   ```bash
+   ./install-all-on-ubuntu-20.04.sh
+   ```
+   This script will:
+   - Install ROS 2.
+   - Install all required Python packages listed in `requirements.txt`.
+   - Add any additional dependencies you specify.
+3. After installation, a test ROS program will run to verify the setup. This is a simple "Hello World" ROS node and can be terminated once verification is complete.
 
-### Use ROS Docker
-In order to use the docker container, you need to first build the docker image and then run it. You can find the description of the Docker image in a file named:```Dockerfile```.
-You can build this file by running the following command on your terminal:
+---
 
+## Method 2: Installing ROS 2 using Docker
+
+### Step 1: Install Docker
+
+Run the following script to install Docker:
+
+```bash
+./install-docker.sh
 ```
-docker build -t ros-foxy .
-```
-Note that you need to be in the directory that the ```Dockerfile``` is located, and then, run this command.
 
-Now that you built the Docker image, you can run it by executing the following command:
+After installation, test your setup:
+
+```bash
+./test-docker-installation.sh
 ```
-docker run ros-foxy
+
+### Step 2: Build and Run ROS Docker Container
+
+1. Navigate to the directory containing the `Dockerfile`.
+2. Build the Docker image:
+   ```bash
+   docker build -t ros-foxy .
+   ```
+3. Run the container:
+   ```bash
+   docker run --rm -it ros-foxy
+   ```
+
+This will create an isolated ROS 2 environment within Docker, useful for testing and development.
+
+---
+
+## Mavlink Communication Between Jetson Nano Devices
+
+This setup enables Jetson Nano devices to communicate via Mavlink messages. Mavlink is a lightweight messaging protocol designed for communication between UAV components. The following steps outline how to enable Mavlink communication:
+
+### Step 1: Install Mavlink
+
+Ensure Mavlink is installed using the following command:
+
+```bash
+pip install pymavlink
 ```
+
+### Step 2: Configure Mavlink Communication
+
+1. Identify the network interface and IP addresses of the Jetson Nano devices.
+2. Configure Mavlink on each device to send and receive messages over a UDP or serial connection.
+3. Run the Mavlink communication script provided in the repository:
+   ```bash
+   python mavlink_communication.py
+   ```
+
+This script facilitates message exchange between Jetson Nano devices, allowing for distributed computing and coordination in drone applications.
+
+---
+
+## Troubleshooting
+
+### Docker Issues
+
+- Ensure Docker is installed correctly by running:
+  ```bash
+  docker --version
+  ```
+- If encountering permission issues, run:
+  ```bash
+  sudo usermod -aG docker $USER
+  ```
+  Then restart your system.
+
+### Mavlink Issues
+
+- Verify that `pymavlink` is installed:
+  ```bash
+  python -m pip show pymavlink
+  ```
+- Ensure network connectivity between devices.
+- Check firewall settings to allow UDP traffic.
+
+---
+
+## Contribution
+
+Feel free to submit issues or pull requests if you encounter bugs or have improvements. Contributions are welcome!
 
