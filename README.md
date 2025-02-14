@@ -1,4 +1,4 @@
-# KUFRL Software-Stack Upgrade
+# Networked Jetson Nano Docker Image
 
 This repository provides two methods for upgrading the KUFRL software stack on a Jetson Nano. The primary objective is to enable the Jetson Nano to communicate with other Jetson Nano devices via Mavlink messages.
 
